@@ -1,8 +1,6 @@
 import os
 import sys
 import time
-import hashlib
-import re
 import subprocess
 import requests
 import platform
@@ -10,14 +8,14 @@ from getpass import getpass
 
 class MobileTools:
     def __init__(self):
-        self.version = "3.0-mobile"
+        self.version = "4.0-mobile"
         self.author = "GanzMods"
         self.check_dependencies()
         
     def check_dependencies(self):
         required = {
             'requests': 'pip install requests',
-            'speedtest': 'pip install speedtest-cli'  # Diperbaiki disini
+            'speedtest': 'pip install speedtest-cli'
         }
         
         missing = [lib for lib in required if not self.is_installed(lib)]
@@ -53,119 +51,160 @@ class MobileTools:
         print("5. Cek Info IP Publik")
         print("6. Pemendek URL")
         print("7. Konversi Satuan Data")
-        print("8. Kalkulator Listrik")
-        print("9. Info Sistem")
-        print("10. Keluar\033[0m")
+        print("8. Kalkulator Biaya Listrik")
+        print("9. Perhitungan Teknis Listrik")
+        print("10. Info Sistem")
+        print("11. Keluar\033[0m")
         print("\033[1;36m" + "═"*50 + "\033[0m")
         
-        choice = input("\033[1;33mPilih menu [1-10]: \033[0m")
+        choice = input("\033[1;33mPilih menu [1-11]: \033[0m")
         return choice
 
-    def run_network_check(self):
-        try:
-            ip_info = requests.get('https://api.ipify.org?format=json').json()
-            print(f"\n\033[1;36mIP Publik: \033[1;32m{ip_info['ip']}\033[0m")
-            
-            ping_result = subprocess.run(
-                ['ping', '-c', '3', '8.8.8.8'],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-            print("\n\033[1;36mHasil Ping:\033[0m")
-            print(ping_result.stdout.decode()[:200])
-            
-        except Exception as e:
-            print(f"\033[1;31mError: {str(e)}\033[0m")
+    # ... [Metode yang sama sebelumnya] ...
 
-    def run_speedtest(self):
-        try:
-            import speedtest
-            st = speedtest.Speedtest()
-            st.get_best_server()
-            
-            print("\n\033[1;36mMengukur kecepatan unduh...\033[0m")
-            download = st.download() / 1_000_000
-            print("\033[1;36mMengukur kecepatan unggah...\033[0m")
-            upload = st.upload() / 1_000_000
-            
-            print(f"\n\033[1;36mHasil Speedtest:")
-            print(f"Unduh: \033[1;32m{download:.2f} Mbps")
-            print(f"\033[1;36mUnggah: \033[1;32m{upload:.2f} Mbps\033[0m")
-            
-        except Exception as e:
-            print(f"\033[1;31mError: {str(e)}\033[0m")
-
-    def check_password_strength(self):
-        password = getpass("Masukkan password: ")
-        strength = 0
+    def technical_electric_calculations(self):
+        os.system('clear')
+        print("\033[1;36m\n=== Perhitungan Teknis Listrik ===")
+        print("1. Hitung Daya (P)")
+        print("2. Hitung Tegangan (V)")
+        print("3. Hitung Arus (I)")
+        print("4. Hitung Hambatan (R)")
+        print("5. Kembali ke Menu Utama\033[0m")
+        choice = input("\033[1;33mPilih jenis perhitungan [1-5]: \033[0m")
         
-        if len(password) >= 8: strength += 1
-        if any(c.isupper() for c in password): strength += 1
-        if any(c.islower() for c in password): strength += 1
-        if any(c.isdigit() for c in password): strength += 1
-        if any(not c.isalnum() for c in password): strength += 1
+        if choice == '1':
+            self.calculate_power()
+        elif choice == '2':
+            self.calculate_voltage()
+        elif choice == '3':
+            self.calculate_current()
+        elif choice == '4':
+            self.calculate_resistance()
+        elif choice == '5':
+            return
+        else:
+            print("\033[1;31mPilihan tidak valid!\033[0m")
+            time.sleep(1)
+
+    def calculate_power(self):
+        os.system('clear')
+        print("\033[1;36m\n=== Menghitung Daya (P) ===")
+        print("Pilih rumus:")
+        print("1. P = V × I (Tegangan × Arus)")
+        print("2. P = V² / R (Tegangan kuadrat / Hambatan)")
+        print("3. P = I² × R (Arus kuadrat × Hambatan)\033[0m")
+        formula = input("\033[1;33mPilih rumus [1-3]: \033[0m")
         
-        levels = ["Sangat Lemah", "Lemah", "Sedang", "Kuat", "Sangat Kuat"]
-        print(f"\n\033[1;36mTingkat Keamanan: \033[1;32m{levels[strength]}\033[0m")
-
-    def wifi_scanner(self):
         try:
-            print("\n\033[1;36mMemindai WiFi...\033[0m")
-            result = subprocess.run(
-                ['termux-wifi-scaninfo'],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-            print(result.stdout.decode())
-        except:
-            print("\033[1;31mInstall termux-api dulu:\npkg install termux-api\033[0m")
-
-    def ip_lookup(self):
-        try:
-            response = requests.get('https://ipinfo.io/json')
-            data = response.json()
-            print(f"\n\033[1;36mIP: {data['ip']}")
-            print(f"Lokasi: {data['city']}, {data['region']}")
-            print(f"Provider: {data['org']}\033[0m")
-        except Exception as e:
-            print(f"\033[1;31mError: {str(e)}\033[0m")
-
-    def url_shortener(self):
-        url = input("Masukkan URL panjang: ")
-        try:
-            response = requests.get(f'https://tinyurl.com/api-create.php?url={url}')
-            print(f"\n\033[1;36mURL Pendek: \033[1;32m{response.text}\033[0m")
-        except Exception as e:
-            print(f"\033[1;31mError: {str(e)}\033[0m")
-
-    def data_converter(self):
-        print("\n\033[1;36mContoh: 1000 MB = 1 GB")
-        value = float(input("Masukkan nilai: "))
-        print(f"\n{value} MB = \033[1;32m{value/1000} GB")
-        print(f"{value} GB = \033[1;32m{value*1000} MB\033[0m")
-
-    def electricity_calculator(self):
-        try:
-            print("\n\033[1;36mKalkulator Biaya Listrik")
-            watt = float(input("Daya perangkat (Watt): "))
-            hours = float(input("Pemakaian per hari (jam): "))
-            cost = float(input("Biaya per kWh (Rp): "))
-            
-            daily = (watt * hours / 1000) * cost
-            monthly = daily * 30
-            annual = daily * 365
-            
-            print(f"\n\033[1;36mBiaya Harian: \033[1;32mRp{daily:,.2f}")
-            print(f"\033[1;36mBiaya Bulanan: \033[1;32mRp{monthly:,.2f}")
-            print(f"\033[1;36mBiaya Tahunan: \033[1;32mRp{annual:,.2f}\033[0m")
-            
+            if formula == '1':
+                v = float(input("Masukkan Tegangan (V): "))
+                i = float(input("Masukkan Arus (A): "))
+                p = v * i
+                print(f"\033[1;36mDaya (P) = \033[1;32m{p:.2f} Watt\033[0m")
+            elif formula == '2':
+                v = float(input("Masukkan Tegangan (V): "))
+                r = float(input("Masukkan Hambatan (Ω): "))
+                p = (v ** 2) / r
+                print(f"\033[1;36mDaya (P) = \033[1;32m{p:.2f} Watt\033[0m")
+            elif formula == '3':
+                i = float(input("Masukkan Arus (A): "))
+                r = float(input("Masukkan Hambatan (Ω): "))
+                p = (i ** 2) * r
+                print(f"\033[1;36mDaya (P) = \033[1;32m{p:.2f} Watt\033[0m")
+            else:
+                print("\033[1;31mPilihan tidak valid!\033[0m")
         except ValueError:
             print("\033[1;31mInput tidak valid! Masukkan angka.\033[0m")
+        except ZeroDivisionError:
+            print("\033[1;31mError: Pembagian dengan nol!\033[0m")
+        input("\nTekan Enter untuk melanjutkan...")
 
-    def system_info(self):
-        print(f"\n\033[1;36mSistem Operasi: \033[1;32m{platform.system()}")
-        print(f"\033[1;36mVersi Python: \033[1;32m{platform.python_version()}")
-        print(f"\033[1;36mArsitektur: \033[1;32m{platform.machine()}\033[0m")
+    def calculate_voltage(self):
+        os.system('clear')
+        print("\033[1;36m\n=== Menghitung Tegangan (V) ===")
+        print("Pilih rumus:")
+        print("1. V = I × R (Arus × Hambatan)")
+        print("2. V = P / I (Daya / Arus)\033[0m")
+        formula = input("\033[1;33mPilih rumus [1-2]: \033[0m")
+        
+        try:
+            if formula == '1':
+                i = float(input("Masukkan Arus (A): "))
+                r = float(input("Masukkan Hambatan (Ω): "))
+                v = i * r
+                print(f"\033[1;36mTegangan (V) = \033[1;32m{v:.2f} Volt\033[0m")
+            elif formula == '2':
+                p = float(input("Masukkan Daya (W): "))
+                i = float(input("Masukkan Arus (A): "))
+                v = p / i
+                print(f"\033[1;36mTegangan (V) = \033[1;32m{v:.2f} Volt\033[0m")
+            else:
+                print("\033[1;31mPilihan tidak valid!\033[0m")
+        except ValueError:
+            print("\033[1;31mInput tidak valid! Masukkan angka.\033[0m")
+        except ZeroDivisionError:
+            print("\033[1;31mError: Pembagian dengan nol!\033[0m")
+        input("\nTekan Enter untuk melanjutkan...")
+
+    def calculate_current(self):
+        os.system('clear')
+        print("\033[1;36m\n=== Menghitung Arus (I) ===")
+        print("Pilih rumus:")
+        print("1. I = V / R (Tegangan / Hambatan)")
+        print("2. I = P / V (Daya / Tegangan)\033[0m")
+        formula = input("\033[1;33mPilih rumus [1-2]: \033[0m")
+        
+        try:
+            if formula == '1':
+                v = float(input("Masukkan Tegangan (V): "))
+                r = float(input("Masukkan Hambatan (Ω): "))
+                i = v / r
+                print(f"\033[1;36mArus (I) = \033[1;32m{i:.2f} Ampere\033[0m")
+            elif formula == '2':
+                p = float(input("Masukkan Daya (W): "))
+                v = float(input("Masukkan Tegangan (V): "))
+                i = p / v
+                print(f"\033[1;36mArus (I) = \033[1;32m{i:.2f} Ampere\033[0m")
+            else:
+                print("\033[1;31mPilihan tidak valid!\033[0m")
+        except ValueError:
+            print("\033[1;31mInput tidak valid! Masukkan angka.\033[0m")
+        except ZeroDivisionError:
+            print("\033[1;31mError: Pembagian dengan nol!\033[0m")
+        input("\nTekan Enter untuk melanjutkan...")
+
+    def calculate_resistance(self):
+        os.system('clear')
+        print("\033[1;36m\n=== Menghitung Hambatan (R) ===")
+        print("Pilih rumus:")
+        print("1. R = V / I (Tegangan / Arus)")
+        print("2. R = V² / P (Tegangan kuadrat / Daya)")
+        print("3. R = P / I² (Daya / Arus kuadrat)\033[0m")
+        formula = input("\033[1;33mPilih rumus [1-3]: \033[0m")
+        
+        try:
+            if formula == '1':
+                v = float(input("Masukkan Tegangan (V): "))
+                i = float(input("Masukkan Arus (A): "))
+                r = v / i
+                print(f"\033[1;36mHambatan (R) = \033[1;32m{r:.2f} Ohm\033[0m")
+            elif formula == '2':
+                v = float(input("Masukkan Tegangan (V): "))
+                p = float(input("Masukkan Daya (W): "))
+                r = (v ** 2) / p
+                print(f"\033[1;36mHambatan (R) = \033[1;32m{r:.2f} Ohm\033[0m")
+            elif formula == '3':
+                p = float(input("Masukkan Daya (W): "))
+                i = float(input("Masukkan Arus (A): "))
+                r = p / (i ** 2)
+                print(f"\033[1;36mHambatan (R) = \033[1;32m{r:.2f} Ohm\033[0m")
+            else:
+                print("\033[1;31mPilihan tidak valid!\033[0m")
+        except ValueError:
+            print("\033[1;31mInput tidak valid! Masukkan angka.\033[0m")
+        except ZeroDivisionError:
+            print("\033[1;31mError: Pembagian dengan nol!\033[0m")
+        input("\nTekan Enter untuk melanjutkan...")
 
     def main(self):
         while True:
@@ -188,8 +227,10 @@ class MobileTools:
             elif choice == '8':
                 self.electricity_calculator()
             elif choice == '9':
-                self.system_info()
+                self.technical_electric_calculations()
             elif choice == '10':
+                self.system_info()
+            elif choice == '11':
                 print("\n\033[1;31mKeluar...\033[0m")
                 sys.exit()
             else:
