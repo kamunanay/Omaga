@@ -1,4 +1,4 @@
-import os
+jiimport os
 import sys
 import time
 import hashlib
@@ -14,18 +14,6 @@ class MobileTools:
         self.author = "GanzMods"
         self.check_dependencies()
         
-    def check_dependencies(self):
-        required = {
-            'requests': 'pip install requests',
-            'speedtest-cli': 'pip install speedtest-cli'
-        }
-        
-        missing = [lib for lib in required if not self.is_installed(lib)]
-        if missing:
-            print("\033[1;31mERROR: Jalankan di Termux:\033[0m")
-            print("pkg update && pkg install python clang")
-            print("pip install " + " ".join(missing))
-            sys.exit(1)
 
     def is_installed(self, lib):
         try:
