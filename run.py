@@ -189,12 +189,119 @@ class MobileTools:
                     print(f"║ {ssid[:8]:<8} ║ {bssid[:18]:<18} ║ {rssi:>6} ║")
             
             print(f"╚{'═'*10}╩{'═'*20}╩{'═'*8}╝{self.colors['reset']}")
+
+        def ip_lookup(self):
+    try:
+        self.print_box(" CEK INFO IP PUBLIK ", 'yellow')
+        self.loading_animation("Mengumpulkan data")
+        
+        response = requests.get('https://ipinfo.io/json')
+        data = response.json()
+        
+        self.print_color("\n🌍 Informasi IP:", 'yellow')
+        print(f"{self.colors['cyan']}╔{'═'*25}╦{'═'*20}╗")
+        print(f"║ {'Parameter':<23} ║ {'Nilai':<18} ║")
+        print(f"╠{'═'*25}╬{'═'*20}╣")
+        print(f"║ IP Address           ║ {self.colors['green']}{data['ip']:<18}{self.colors['cyan']} ║")
+        print(f"║ Kota                 ║ {self.colors['green']}{data['city']:<18}{self.colors['cyan']} ║")
+        print(f"║ Region               ║ {self.colors['green']}{data['region']:<18}{self.colors['cyan']} ║")
+        print(f"║ Negara               ║ {self.colors['green']}{data['country']:<18}{self.colors['cyan']} ║")
+        print(f"║ Provider             ║ {self.colors['green']}{data['org'][:17]:<18}{self.colors['cyan']} ║")
+        print(f"╚{'═'*25}╩{'═'*20}╝{self.colors['reset']}")
+        
+    except Exception as e:
+        self.print_color(f"\n❌ Error: {str(e)}", 'red')
+
+def technical_calculations(self):
+    while True:
+        self.show_banner()
+        self.print_box(" PERHITUNGAN TEKNIS LISTRIK ", 'red')
+        menu = [
+            ("1", "Hitung Daya (P)", 'cyan'),
+            ("2", "Hitung Tegangan (V)", 'blue'),
+            ("3", "Hitung Arus (I)", 'magenta'),
+            ("4", "Hitung Hambatan (R)", 'green'),
+            ("5", "Kembali ke Menu Utama", 'yellow')
+        ]
+        
+        for item in menu:
+            self.print_color(f"  {item[0]}. {item[1]}", item[2])
+        
+        choice = input(f"\n{self.colors['yellow']}➤ Pilih perhitungan [1-5]: {self.colors['reset']}")
+        
+        if choice == '1':
+            self.calculate_power()
+        elif choice == '2':
+            self.calculate_voltage()
+        elif choice == '3':
+            self.calculate_current()
+        elif choice == '4':
+            self.calculate_resistance()
+        elif choice == '5':
+            return
+        else:
+            self.print_color("Pilihan tidak valid!", 'red')
+            time.sleep(1)
+
+def calculate_power(self):
+    self.show_banner()
+    self.print_box(" HITUNG DAYA (P) ", 'cyan')
+    print(f"{self.colors['blue']}Pilih rumus:")
+    print("1. P = V × I")
+    print("2. P = V² / R")
+    print("3. P = I² × R")
+    print(f"{self.colors['reset']}")
+    
+    try:
+        formula = input(f"{self.colors['yellow']}➤ Pilih rumus [1-3]: {self.colors['reset']}")
+        if formula == '1':
+            v = float(input("Masukkan Tegangan (V): "))
+            i = float(input("Masukkan Arus (A): "))
+            result = v * i
+        elif formula == '2':
+            v = float(input("Masukkan Tegangan (V): "))
+            r = float(input("Masukkan Hambatan (Ω): "))
+            result = (v ** 2) / r
+        elif formula == '3':
+            i = float(input("Masukkan Arus (A): "))
+            r = float(input("Masukkan Hambatan (Ω): "))
+            result = (i ** 2) * r
+        else:
+            raise ValueError
             
+        self.print_color(f"\n⚡ Hasil Perhitungan: {self.colors['green']}{result:.2f} Watt{self.colors['reset']}", 'cyan')
+    except (ValueError, ZeroDivisionError):
+        self.print_color("\n❌ Input tidak valid atau pembagian dengan nol!", 'red')
+    input("\nTekan Enter untuk melanjutkan...")
+
+def electricity_calculator(self):
+    try:
+        self.print_box(" KALKULATOR BIAYA LISTRIK ", 'cyan')
+        print(f"{self.colors['blue']}Masukkan data berikut:")
+        
+        watt = float(input("Daya perangkat (Watt): "))
+        hours = float(input("Pemakaian per hari (jam): "))
+        cost = float(input("Biaya per kWh (Rp): "))
+        
+        daily = (watt * hours / 1000) * cost
+        monthly = daily * 30
+        annual = daily * 365
+        
+        self.print_color("\n📊 Hasil Perhitungan:", 'cyan')
+        print(f"{self.colors['green']}╔{'═'*20}╦{'═'*15}╗")
+        print(f"║ {'Periode':<18} ║ {'Biaya':<13} ║")
+        print(f"╠{'═'*20}╬{'═'*15}╣")
+        print(f"║ Harian           ║ Rp{daily:>10,.2f} ║")
+        print(f"║ Bulanan          ║ Rp{monthly:>10,.2f} ║")
+        print(f"║ Tahunan          ║ Rp{annual:>10,.2f} ║")
+        print(f"╚{'═'*20}╩{'═'*15}╝{self.colors['reset']}")
+        
+    except ValueError:
+        self.print_color("\n❌ Input harus berupa angka!", 'red')
+    input("\nTekan Enter untuk melanjutkan...")
         except:
             self.print_color("✖ Fitur ini hanya tersedia di Termux", 'red')
             print(f"{self.colors['yellow']}Instal termux-api: pkg install termux-api{self.colors['reset']}")
-
-    # [Method lainnya dengan implementasi lengkap...]
 
     def main(self):
         while True:
