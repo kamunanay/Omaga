@@ -190,8 +190,8 @@ class MobileTools:
             
             print(f"╚{'═'*10}╩{'═'*20}╩{'═'*8}╝{self.colors['reset']}")
 
-        def ip_lookup(self):
-    try:
+     def ip_lookup(self):
+        try:
         self.print_box(" CEK INFO IP PUBLIK ", 'yellow')
         self.loading_animation("Mengumpulkan data")
         
@@ -212,8 +212,8 @@ class MobileTools:
     except Exception as e:
         self.print_color(f"\n❌ Error: {str(e)}", 'red')
 
-def technical_calculations(self):
-    while True:
+    def technical_calculations(self):
+        while True:
         self.show_banner()
         self.print_box(" PERHITUNGAN TEKNIS LISTRIK ", 'red')
         menu = [
@@ -243,7 +243,7 @@ def technical_calculations(self):
             self.print_color("Pilihan tidak valid!", 'red')
             time.sleep(1)
 
-def calculate_power(self):
+    def calculate_power(self):
     self.show_banner()
     self.print_box(" HITUNG DAYA (P) ", 'cyan')
     print(f"{self.colors['blue']}Pilih rumus:")
@@ -274,8 +274,8 @@ def calculate_power(self):
         self.print_color("\n❌ Input tidak valid atau pembagian dengan nol!", 'red')
     input("\nTekan Enter untuk melanjutkan...")
 
-def electricity_calculator(self):
-    try:
+    def electricity_calculator(self):
+         try:
         self.print_box(" KALKULATOR BIAYA LISTRIK ", 'cyan')
         print(f"{self.colors['blue']}Masukkan data berikut:")
         
