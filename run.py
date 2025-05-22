@@ -75,7 +75,11 @@ class MobileTools:
             ("6", "Perhitungan Teknis Listrik", 'red'),
             ("7", "Kalkulator Biaya Listrik", 'cyan'),
             ("8", "Info Sistem", 'blue'),
-            ("9", "Keluar", 'magenta')
+            ("9", "Port Scanner", 'magenta'),
+            ("10", "DNS Lookup", 'green'),
+            ("11", "MAC Addreas Lookup", 'yellow'),
+            ("12", "Konversi Satuan", 'red'),
+            ("13", "Keluar", 'magenta'),  
         ]
         
         for item in menu:
@@ -399,6 +403,75 @@ class MobileTools:
         print(f"║ Versi Python         ║ {self.colors['green']}{platform.python_version():<18}{self.colors['cyan']} ║")
         print(f"╚{'═'*25}╩{'═'*20}╝{self.colors['reset']}")
 
+    def port_scanner(self):
+        try:
+            self.print_box(" PORT SCANNER ", 'magenta')
+            target = input(f"{self.colors['yellow']}Masukkan IP target: {self.colors['reset']}")
+            port_range = input("Masukkan range port (contoh: 1-100): ")
+
+            start_port, end_port = map(int, port_range.split('-'))
+            self.loading_animation("Memindai port")
+
+            print(f"\n{self.colors['cyan']}╔{'═'*10}╦{'═'*15}╗")
+            print(f"║ {'Port':<8} ║ {'Status':<13} ║")
+            print(f"╠{'═'*10}╬{'═'*15}╣")
+            
+            for port in range(start_port, end_port+1):
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(1)
+                result = sock.connect_ex((target, port))
+                if result == 0:
+                    print(f"║ {port:<8} ║ {self.colors['green']}Terbuka{' '*(7)}{self.colors['cyan']} ║")
+                sock.close()
+            
+            print(f"╚{'═'*10}╩{'═'*15}╝{self.colors['reset']}")
+            
+        except Exception as e:
+            self.print_color(f"\n❌ Error: {str(e)}", 'red')
+
+    def dns_lookup(self):
+        try:
+            self.print_box(" DNS LOOKUP ", 'green')
+            domain = input(f"{self.colors['yellow']}Masukkan domain: {self.colors['reset']}")
+            
+            self.loading_animation("Mencari informasi DNS")
+            ip_address = socket.gethostbyname(domain)
+            
+            print(f"\n{self.colors['cyan']}╔{'═'*20}╦{'═'*20}╗")
+            print(f"║ {'Domain':<18} ║ {'IP Address':<18} ║")
+            print(f"╠{'═'*20}╬{'═'*20}╣")
+            print(f"║ {domain[:18]:<18} ║ {self.colors['green']}{ip_address:<18}{self.colors['cyan']} ║")
+            print(f"╚{'═'*20}╩{'═'*20}╝{self.colors['reset']}")
+            
+        except Exception as e:
+            self.print_color(f"\n❌ Error: {str(e)}", 'red')
+
+    def unit_converter(self):
+        try:
+            self.print_box(" KONVERSI SATUAN ", 'red')
+            print(f"{self.colors['cyan']}Pilih konversi:")
+            print("1. Volt ke Milivolt (mV)")
+            print("2. Ampere ke Miliampere (mA)")
+            print("3. Ohm ke Kiloohm (kΩ)")
+            print("4. Watt ke Kilowatt (kW)")
+            
+            choice = input(f"\n{self.colors['yellow']}➤ Pilih konversi [1-4]: {self.colors['reset']}")
+            value = float(input("Masukkan nilai: "))
+            
+            conversions = {
+                '1': {'from': 'V', 'to': 'mV', 'factor': 1000},
+                '2': {'from': 'A', 'to': 'mA', 'factor': 1000},
+                '3': {'from': 'Ω', 'to': 'kΩ', 'factor': 0.001},
+                '4': {'from': 'W', 'to': 'kW', 'factor': 0.001}
+            }
+            
+            result = value * conversions[choice]['factor']
+            
+            print(f"\n{self.colors['green']}{value} {conversions[choice]['from']} = {result:.2f} {conversions[choice]['to']}{self.colors['reset']}")
+            
+        except Exception as e:
+            self.print_color(f"\n❌ Error: {str(e)}", 'red')
+
     def main(self):
         while True:
             choice = self.show_menu()
@@ -420,6 +493,14 @@ class MobileTools:
             elif choice == '8':
                 self.system_info()
             elif choice == '9':
+                self.port_scanner()
+            elif choice == '10':
+                self.dns_lookup()
+            elif choice == '11':
+                self.mac_lookup()
+            elif choice == '12':
+                self.unit_converter()
+            elif choice == '13':
                 self.print_box(" TERIMA KASIH TELAH MENGGUNAKAN ", 'magenta')
                 sys.exit()
             else:
