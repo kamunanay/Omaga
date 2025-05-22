@@ -28,16 +28,7 @@ class MobileTools:
             'speedtest-cli': 'pip install speedtest-cli'
         }
         
-        missing = [lib for lib in required if not self.is_installed(lib)]
-        if missing:
-            self.print_box(" ERROR: PERLUKAN INSTALASI DEPENDENSI ", 'red')
-            print(f"{self.colors['yellow']}Jalankan di Termux:")
-            print("pkg update && pkg install python clang")
-            for lib in missing:
-                print(f"pip install {required[lib]}")
-            print(f"{self.colors['reset']}")
-            sys.exit(1)
-
+        
     def is_installed(self, lib):
         try:
             __import__(lib)
