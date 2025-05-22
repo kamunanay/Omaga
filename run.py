@@ -446,6 +446,23 @@ class MobileTools:
         except Exception as e:
             self.print_color(f"\n❌ Error: {str(e)}", 'red')
 
+    def mac_lookup(self):
+        try:
+            self.print_box(" MAC ADDRESS LOOKUP ", 'yellow')
+            mac = input(f"{self.colors['yellow']}Masukkan MAC Address: {self.colors['reset']}")
+            
+            self.loading_animation("Mencari vendor")
+            response = requests.get(f'https://api.macvendors.com/{mac}')
+            
+            print(f"\n{self.colors['cyan']}╔{'═'*20}╦{'═'*30}╗")
+            print(f"║ {'MAC Address':<18} ║ {'Vendor':<28} ║")
+            print(f"╠{'═'*20}╬{'═'*30}╣")
+            print(f"║ {mac:<18} ║ {self.colors['green']}{response.text[:28]:<28}{self.colors['cyan']} ║")
+            print(f"╚{'═'*20}╩{'═'*30}╝{self.colors['reset']}")
+            
+        except Exception as e:
+            self.print_color(f"\n❌ Error: {str(e)}", 'red')
+
     def unit_converter(self):
         try:
             self.print_box(" KONVERSI SATUAN ", 'red')
